@@ -384,7 +384,7 @@ export default {
           });
         }
         
-        const response = await fetch(\`https://api.telegram.org/bot\${BOT_TOKEN}/sendMessage\`, {
+        const response = await fetch("https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage", {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
